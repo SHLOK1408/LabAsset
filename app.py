@@ -110,6 +110,7 @@ def add_equipment():
 def issue_equipment(asset_id):
     for item in equipment:
         if item["asset_id"] == asset_id:
+
             if item["status"] != "Available":
                 flash(
                     "Only available equipment can be issued.",
@@ -134,6 +135,7 @@ def issue_equipment(asset_id):
 def return_equipment(asset_id):
     for item in equipment:
         if item["asset_id"] == asset_id:
+
             if item["status"] != "Issued":
                 flash(
                     "Only issued equipment can be returned.",
@@ -145,6 +147,56 @@ def return_equipment(asset_id):
 
             flash(
                 f"{asset_id} returned successfully.",
+                "success"
+            )
+
+            return redirect(url_for("home"))
+
+    flash("Equipment not found.", "error")
+    return redirect(url_for("home"))
+
+
+@app.route("/maintenance/<asset_id>", methods=["POST"])
+def send_to_maintenance(asset_id):
+    for item in equipment:
+        if item["asset_id"] == asset_id:
+
+            if item["status"] != "Available":
+                flash(
+                    "Only available equipment can be sent to maintenance.",
+                    "error"
+                )
+                return redirect(url_for("home"))
+
+            item["status"] = "Maintenance"
+
+            flash(
+                f"{asset_id} sent to maintenance.",
+                "success"
+            )
+
+            return redirect(url_for("home"))
+
+    flash("Equipment not found.", "error")
+    return redirect(url_for("home"))
+
+
+@app.route("/restore/<asset_id>", methods=["POST"])
+def restore_equipment(asset_id):
+    for item in equipment:
+        if item["asset_id"] == asset_id:
+
+            if item["status"] != "Maintenance":
+                flash(
+                    "Only equipment under maintenance can be restored.",
+                    "error"
+                )
+                return redirect(url_for("home"))
+
+            item["status"] = "Available"
+
+            flash(
+                f"{asset_id} is available again.",
                 "success"
             )
 
