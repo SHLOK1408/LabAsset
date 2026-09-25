@@ -5,8 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabAsset</title>
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 </head>
 
 <body>
@@ -18,6 +21,80 @@
 
 <main>
 
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="message {{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+
+    <!-- Add Equipment Form -->
+    <section class="form-section">
+
+        <h2>Add Equipment</h2>
+
+        <form action="{{ url_for('add_equipment') }}" method="POST">
+
+            <div class="form-group">
+                <label for="asset_id">Asset ID</label>
+
+                <input
+                    type="text"
+                    id="asset_id"
+                    name="asset_id"
+                    placeholder="Example: LAB004"
+                    required
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label for="name">Equipment Name</label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Example: Raspberry Pi"
+                    required
+                >
+            </div>
+
+
+            <div class="form-group">
+                <label for="category">Category</label>
+
+                <select
+                    id="category"
+                    name="category"
+                    required
+                >
+                    <option value="">Select Category</option>
+                    <option value="Networking">Networking</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Computer Accessories">
+                        Computer Accessories
+                    </option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+
+            <button type="submit">
+                Add Equipment
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- Dashboard -->
     <section class="dashboard">
 
         <div class="card">
@@ -42,11 +119,14 @@
 
     </section>
 
+
+    <!-- Equipment Table -->
     <section class="equipment-section">
 
         <h2>Laboratory Equipment</h2>
 
         <table>
+
             <thead>
                 <tr>
                     <th>Asset ID</th>
@@ -57,24 +137,31 @@
             </thead>
 
             <tbody>
+
                 {% for item in equipment %}
+
                 <tr>
                     <td>{{ item.asset_id }}</td>
                     <td>{{ item.name }}</td>
                     <td>{{ item.category }}</td>
+
                     <td>
                         <span class="status {{ item.status|lower }}">
                             {{ item.status }}
                         </span>
                     </td>
                 </tr>
+
                 {% endfor %}
+
             </tbody>
+
         </table>
 
     </section>
 
 </main>
+
 
 <footer>
     <p>LabAsset | Laboratory Equipment Tracking System</p>
