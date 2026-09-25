@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LabAsset</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header>
+    <h1>LabAsset</h1>
+    <p>Laboratory Equipment Tracking System</p>
+</header>
+
+<main>
+
+    <section class="dashboard">
+
+        <div class="card">
+            <h3>Total Equipment</h3>
+            <p>{{ total }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Available</h3>
+            <p>{{ available }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Issued</h3>
+            <p>{{ issued }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Maintenance</h3>
+            <p>{{ maintenance }}</p>
+        </div>
+
+    </section>
+
+    <section class="equipment-section">
+
+        <h2>Laboratory Equipment</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Asset ID</th>
+                    <th>Equipment Name</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in equipment %}
+                <tr>
+                    <td>{{ item.asset_id }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.category }}</td>
+                    <td>
+                        <span class="status {{ item.status|lower }}">
+                            {{ item.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </section>
+
+</main>
+
+<footer>
+    <p>LabAsset | Laboratory Equipment Tracking System</p>
+</footer>
+
+</body>
+</html>
