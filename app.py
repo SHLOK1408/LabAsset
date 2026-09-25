@@ -1,4 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    jsonify
+)
 
 app = Flask(__name__)
 app.secret_key = "labasset-secret-key"
@@ -60,9 +68,17 @@ def home():
 
 @app.route("/add", methods=["POST"])
 def add_equipment():
-    asset_id = request.form.get("asset_id", "").strip().upper()
-    name = request.form.get("name", "").strip()
-    category = request.form.get("category", "").strip()
+    asset_id = request.form.get(
+        "asset_id", ""
+    ).strip().upper()
+
+    name = request.form.get(
+        "name", ""
+    ).strip()
+
+    category = request.form.get(
+        "category", ""
+    ).strip()
 
     if not asset_id or not name or not category:
         flash("All fields are required.", "error")
@@ -85,11 +101,17 @@ def add_equipment():
     )
 
     if duplicate:
-        flash("Asset ID already exists.", "error")
+        flash(
+            "Asset ID already exists.",
+            "error"
+        )
         return redirect(url_for("home"))
 
     if category not in VALID_CATEGORIES:
-        flash("Invalid equipment category.", "error")
+        flash(
+            "Invalid equipment category.",
+            "error"
+        )
         return redirect(url_for("home"))
 
     new_equipment = {
@@ -101,7 +123,10 @@ def add_equipment():
 
     equipment.append(new_equipment)
 
-    flash("Equipment added successfully.", "success")
+    flash(
+        "Equipment added successfully.",
+        "success"
+    )
 
     return redirect(url_for("home"))
 
@@ -109,6 +134,7 @@ def add_equipment():
 @app.route("/issue/<asset_id>", methods=["POST"])
 def issue_equipment(asset_id):
     for item in equipment:
+
         if item["asset_id"] == asset_id:
 
             if item["status"] != "Available":
@@ -134,6 +160,7 @@ def issue_equipment(asset_id):
 @app.route("/return/<asset_id>", methods=["POST"])
 def return_equipment(asset_id):
     for item in equipment:
+
         if item["asset_id"] == asset_id:
 
             if item["status"] != "Issued":
@@ -159,6 +186,7 @@ def return_equipment(asset_id):
 @app.route("/maintenance/<asset_id>", methods=["POST"])
 def send_to_maintenance(asset_id):
     for item in equipment:
+
         if item["asset_id"] == asset_id:
 
             if item["status"] != "Available":
@@ -184,6 +212,7 @@ def send_to_maintenance(asset_id):
 @app.route("/restore/<asset_id>", methods=["POST"])
 def restore_equipment(asset_id):
     for item in equipment:
+
         if item["asset_id"] == asset_id:
 
             if item["status"] != "Maintenance":
@@ -206,5 +235,20 @@ def restore_equipment(asset_id):
     return redirect(url_for("home"))
 
 
+@app.route("/api/equipment")
+def equipment_api():
+    return jsonify(equipment)
+
+
+@app.route("/health")
+def health():
+    return jsonify({
+        "status": "ok"
+    })
+
+
 if __name__ == "__main__":
-    app.run(debug=True, use_reloader=False)
+    app.run(
+        debug=True,
+        use_reloader=False
+    )
