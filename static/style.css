@@ -210,3 +210,33 @@ footer {
     background: #fee2e2;
     color: #991b1b;
 }
+
+.action-form {
+    display: inline;
+}
+
+.issue-button,
+.return-button {
+    padding: 7px 14px;
+}
+
+.issue-button {
+    background: #2563eb;
+}
+
+.issue-button:hover {
+    background: #1d4ed8;
+}
+
+.return-button {
+    background: #16a34a;
+}
+
+.return-button:hover {
+    background: #15803d;
+}
+
+.no-action {
+    color: #777;
+    font-size: 13px;
+}

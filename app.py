@@ -64,12 +64,10 @@ def add_equipment():
     name = request.form.get("name", "").strip()
     category = request.form.get("category", "").strip()
 
-    # Check empty fields
     if not asset_id or not name or not category:
         flash("All fields are required.", "error")
         return redirect(url_for("home"))
 
-    # Check Asset ID format
     if not (
         asset_id.startswith("LAB")
         and len(asset_id) == 6
@@ -81,7 +79,6 @@ def add_equipment():
         )
         return redirect(url_for("home"))
 
-    # Check duplicate Asset ID
     duplicate = any(
         item["asset_id"] == asset_id
         for item in equipment
@@ -91,7 +88,6 @@ def add_equipment():
         flash("Asset ID already exists.", "error")
         return redirect(url_for("home"))
 
-    # Check category
     if category not in VALID_CATEGORIES:
         flash("Invalid equipment category.", "error")
         return redirect(url_for("home"))
@@ -107,6 +103,54 @@ def add_equipment():
 
     flash("Equipment added successfully.", "success")
 
+    return redirect(url_for("home"))
+
+
+@app.route("/issue/<asset_id>", methods=["POST"])
+def issue_equipment(asset_id):
+    for item in equipment:
+        if item["asset_id"] == asset_id:
+            if item["status"] != "Available":
+                flash(
+                    "Only available equipment can be issued.",
+                    "error"
+                )
+                return redirect(url_for("home"))
+
+            item["status"] = "Issued"
+
+            flash(
+                f"{asset_id} issued successfully.",
+                "success"
+            )
+
+            return redirect(url_for("home"))
+
+    flash("Equipment not found.", "error")
+    return redirect(url_for("home"))
+
+
+@app.route("/return/<asset_id>", methods=["POST"])
+def return_equipment(asset_id):
+    for item in equipment:
+        if item["asset_id"] == asset_id:
+            if item["status"] != "Issued":
+                flash(
+                    "Only issued equipment can be returned.",
+                    "error"
+                )
+                return redirect(url_for("home"))
+
+            item["status"] = "Available"
+
+            flash(
+                f"{asset_id} returned successfully.",
+                "success"
+            )
+
+            return redirect(url_for("home"))
+
+    flash("Equipment not found.", "error")
     return redirect(url_for("home"))
 
 

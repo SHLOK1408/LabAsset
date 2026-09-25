@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>LabAsset</title>
 
     <link
@@ -22,26 +23,41 @@
 <main>
 
     <!-- Flash Messages -->
+
     {% with messages = get_flashed_messages(with_categories=true) %}
+
         {% if messages %}
+
             {% for category, message in messages %}
+
                 <div class="message {{ category }}">
                     {{ message }}
                 </div>
+
             {% endfor %}
+
         {% endif %}
+
     {% endwith %}
 
 
-    <!-- Add Equipment Form -->
+    <!-- Add Equipment -->
+
     <section class="form-section">
 
         <h2>Add Equipment</h2>
 
-        <form action="{{ url_for('add_equipment') }}" method="POST">
+        <form
+            class="add-form"
+            action="{{ url_for('add_equipment') }}"
+            method="POST"
+        >
 
             <div class="form-group">
-                <label for="asset_id">Asset ID</label>
+
+                <label for="asset_id">
+                    Asset ID
+                </label>
 
                 <input
                     type="text"
@@ -50,11 +66,15 @@
                     placeholder="Example: LAB004"
                     required
                 >
+
             </div>
 
 
             <div class="form-group">
-                <label for="name">Equipment Name</label>
+
+                <label for="name">
+                    Equipment Name
+                </label>
 
                 <input
                     type="text"
@@ -63,25 +83,44 @@
                     placeholder="Example: Raspberry Pi"
                     required
                 >
+
             </div>
 
 
             <div class="form-group">
-                <label for="category">Category</label>
+
+                <label for="category">
+                    Category
+                </label>
 
                 <select
                     id="category"
                     name="category"
                     required
                 >
-                    <option value="">Select Category</option>
-                    <option value="Networking">Networking</option>
-                    <option value="Electronics">Electronics</option>
+
+                    <option value="">
+                        Select Category
+                    </option>
+
+                    <option value="Networking">
+                        Networking
+                    </option>
+
+                    <option value="Electronics">
+                        Electronics
+                    </option>
+
                     <option value="Computer Accessories">
                         Computer Accessories
                     </option>
-                    <option value="Other">Other</option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
                 </select>
+
             </div>
 
 
@@ -95,6 +134,7 @@
 
 
     <!-- Dashboard -->
+
     <section class="dashboard">
 
         <div class="card">
@@ -121,6 +161,7 @@
 
 
     <!-- Equipment Table -->
+
     <section class="equipment-section">
 
         <h2>Laboratory Equipment</h2>
@@ -128,12 +169,15 @@
         <table>
 
             <thead>
+
                 <tr>
                     <th>Asset ID</th>
                     <th>Equipment Name</th>
                     <th>Category</th>
                     <th>Status</th>
+                    <th>Action</th>
                 </tr>
+
             </thead>
 
             <tbody>
@@ -141,15 +185,73 @@
                 {% for item in equipment %}
 
                 <tr>
+
                     <td>{{ item.asset_id }}</td>
+
                     <td>{{ item.name }}</td>
+
                     <td>{{ item.category }}</td>
 
                     <td>
+
                         <span class="status {{ item.status|lower }}">
                             {{ item.status }}
                         </span>
+
                     </td>
+
+                    <td>
+
+                        {% if item.status == "Available" %}
+
+                            <form
+                                class="action-form"
+                                action="{{ url_for(
+                                    'issue_equipment',
+                                    asset_id=item.asset_id
+                                ) }}"
+                                method="POST"
+                            >
+
+                                <button
+                                    class="issue-button"
+                                    type="submit"
+                                >
+                                    Issue
+                                </button>
+
+                            </form>
+
+                        {% elif item.status == "Issued" %}
+
+                            <form
+                                class="action-form"
+                                action="{{ url_for(
+                                    'return_equipment',
+                                    asset_id=item.asset_id
+                                ) }}"
+                                method="POST"
+                            >
+
+                                <button
+                                    class="return-button"
+                                    type="submit"
+                                >
+                                    Return
+                                </button>
+
+                            </form>
+
+                        {% else %}
+
+                            <span class="no-action">
+                                Under Maintenance
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
                 </tr>
 
                 {% endfor %}
@@ -164,8 +266,13 @@
 
 
 <footer>
-    <p>LabAsset | Laboratory Equipment Tracking System</p>
+
+    <p>
+        LabAsset | Laboratory Equipment Tracking System
+    </p>
+
 </footer>
 
 </body>
+
 </html>
