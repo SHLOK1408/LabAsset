@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>LabAsset</title>
+    <title>LabAsset - Laboratory Equipment Tracking</title>
 
     <link
         rel="stylesheet"
@@ -15,238 +15,327 @@
 
 <body>
 
-<header>
-    <h1>LabAsset</h1>
-    <p>Laboratory Equipment Tracking System</p>
-</header>
+    <header>
+        <h1>LabAsset</h1>
+        <p>Laboratory Equipment Tracking System</p>
+    </header>
 
-<main>
+    <main>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="message {{ category }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-
-    <section class="form-section">
-
-        <h2>Add Equipment</h2>
-
-        <form
-            class="add-form"
-            action="{{ url_for('add_equipment') }}"
-            method="POST"
-        >
-
-            <div class="form-group">
-                <label for="asset_id">Asset ID</label>
-
-                <input
-                    type="text"
-                    id="asset_id"
-                    name="asset_id"
-                    placeholder="Example: LAB004"
-                    required
-                >
-            </div>
-
-            <div class="form-group">
-                <label for="name">Equipment Name</label>
-
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="Example: Raspberry Pi"
-                    required
-                >
-            </div>
-
-            <div class="form-group">
-                <label for="category">Category</label>
-
-                <select
-                    id="category"
-                    name="category"
-                    required
-                >
-                    <option value="">Select Category</option>
-                    <option value="Networking">Networking</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Computer Accessories">
-                        Computer Accessories
-                    </option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-
-            <button type="submit">
-                Add Equipment
-            </button>
-
-        </form>
-
-    </section>
-
-
-    <section class="dashboard">
-
-        <div class="card">
-            <h3>Total Equipment</h3>
-            <p>{{ total }}</p>
-        </div>
-
-        <div class="card">
-            <h3>Available</h3>
-            <p>{{ available }}</p>
-        </div>
-
-        <div class="card">
-            <h3>Issued</h3>
-            <p>{{ issued }}</p>
-        </div>
-
-        <div class="card">
-            <h3>Maintenance</h3>
-            <p>{{ maintenance }}</p>
-        </div>
-
-    </section>
-
-
-    <section class="equipment-section">
-
-        <h2>Laboratory Equipment</h2>
-
-        <table>
-
-            <thead>
-                <tr>
-                    <th>Asset ID</th>
-                    <th>Equipment Name</th>
-                    <th>Category</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                {% for item in equipment %}
-
-                <tr>
-
-                    <td>{{ item.asset_id }}</td>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.category }}</td>
-
-                    <td>
-                        <span class="status {{ item.status|lower }}">
-                            {{ item.status }}
-                        </span>
-                    </td>
-
-                    <td class="actions">
-
-                        {% if item.status == "Available" %}
-
-                            <form
-                                class="action-form"
-                                action="{{ url_for(
-                                    'issue_equipment',
-                                    asset_id=item.asset_id
-                                ) }}"
-                                method="POST"
-                            >
-                                <button
-                                    class="issue-button"
-                                    type="submit"
-                                >
-                                    Issue
-                                </button>
-                            </form>
-
-                            <form
-                                class="action-form"
-                                action="{{ url_for(
-                                    'send_to_maintenance',
-                                    asset_id=item.asset_id
-                                ) }}"
-                                method="POST"
-                            >
-                                <button
-                                    class="maintenance-button"
-                                    type="submit"
-                                >
-                                    Maintenance
-                                </button>
-                            </form>
-
-
-                        {% elif item.status == "Issued" %}
-
-                            <form
-                                class="action-form"
-                                action="{{ url_for(
-                                    'return_equipment',
-                                    asset_id=item.asset_id
-                                ) }}"
-                                method="POST"
-                            >
-                                <button
-                                    class="return-button"
-                                    type="submit"
-                                >
-                                    Return
-                                </button>
-                            </form>
-
-
-                        {% elif item.status == "Maintenance" %}
-
-                            <form
-                                class="action-form"
-                                action="{{ url_for(
-                                    'restore_equipment',
-                                    asset_id=item.asset_id
-                                ) }}"
-                                method="POST"
-                            >
-                                <button
-                                    class="restore-button"
-                                    type="submit"
-                                >
-                                    Mark Available
-                                </button>
-                            </form>
-
-                        {% endif %}
-
-                    </td>
-
-                </tr>
-
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">
+                        {{ message }}
+                    </div>
                 {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </section>
-
-</main>
+            {% endif %}
+        {% endwith %}
 
 
-<footer>
-    <p>
-        LabAsset | Laboratory Equipment Tracking System
-    </p>
-</footer>
+        <section class="form-section">
+
+            <h2>Add Equipment</h2>
+
+            <form
+                class="add-form"
+                action="{{ url_for('add_equipment') }}"
+                method="POST"
+            >
+
+                <div class="form-group">
+                    <label for="asset_id">Asset ID</label>
+
+                    <input
+                        type="text"
+                        id="asset_id"
+                        name="asset_id"
+                        placeholder="LAB004"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="name">Equipment Name</label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Example: Network Switch"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+
+                    <select
+                        id="category"
+                        name="category"
+                        required
+                    >
+                        <option value="">Select Category</option>
+                        <option value="Networking">
+                            Networking
+                        </option>
+                        <option value="Electronics">
+                            Electronics
+                        </option>
+                        <option value="Computer Accessories">
+                            Computer Accessories
+                        </option>
+                        <option value="Other">
+                            Other
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit">
+                    Add Equipment
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <section class="dashboard">
+
+            <div class="card">
+                <h3>Total Equipment</h3>
+                <p>{{ total }}</p>
+            </div>
+
+            <div class="card">
+                <h3>Available</h3>
+                <p>{{ available }}</p>
+            </div>
+
+            <div class="card">
+                <h3>Issued</h3>
+                <p>{{ issued }}</p>
+            </div>
+
+            <div class="card">
+                <h3>Maintenance</h3>
+                <p>{{ maintenance }}</p>
+            </div>
+
+        </section>
+
+
+        <section class="equipment-section">
+
+            <div class="equipment-heading">
+                <h2>Equipment Inventory</h2>
+            </div>
+
+
+            <form
+                class="filter-form"
+                action="{{ url_for('home') }}"
+                method="GET"
+            >
+
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Search Asset ID or Equipment Name"
+                    value="{{ search }}"
+                >
+
+                <select name="status">
+                    <option value="">All Statuses</option>
+
+                    <option
+                        value="Available"
+                        {% if status_filter == "Available" %}
+                            selected
+                        {% endif %}
+                    >
+                        Available
+                    </option>
+
+                    <option
+                        value="Issued"
+                        {% if status_filter == "Issued" %}
+                            selected
+                        {% endif %}
+                    >
+                        Issued
+                    </option>
+
+                    <option
+                        value="Maintenance"
+                        {% if status_filter == "Maintenance" %}
+                            selected
+                        {% endif %}
+                    >
+                        Maintenance
+                    </option>
+
+                </select>
+
+                <button type="submit">
+                    Search
+                </button>
+
+                <a
+                    class="clear-button"
+                    href="{{ url_for('home') }}"
+                >
+                    Clear
+                </a>
+
+            </form>
+
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Asset ID</th>
+                        <th>Equipment Name</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for item in equipment %}
+
+                    <tr>
+
+                        <td>{{ item.asset_id }}</td>
+
+                        <td>{{ item.name }}</td>
+
+                        <td>{{ item.category }}</td>
+
+                        <td>
+                            <span
+                                class="status {{ item.status|lower }}"
+                            >
+                                {{ item.status }}
+                            </span>
+                        </td>
+
+                        <td class="actions">
+
+                            {% if item.status == "Available" %}
+
+                                <form
+                                    class="action-form"
+                                    action="{{ url_for(
+                                        'issue_equipment',
+                                        asset_id=item.asset_id
+                                    ) }}"
+                                    method="POST"
+                                >
+                                    <button
+                                        class="issue-button"
+                                        type="submit"
+                                    >
+                                        Issue
+                                    </button>
+                                </form>
+
+                                <form
+                                    class="action-form"
+                                    action="{{ url_for(
+                                        'send_to_maintenance',
+                                        asset_id=item.asset_id
+                                    ) }}"
+                                    method="POST"
+                                >
+                                    <button
+                                        class="maintenance-button"
+                                        type="submit"
+                                    >
+                                        Maintenance
+                                    </button>
+                                </form>
+
+
+                            {% elif item.status == "Issued" %}
+
+                                <form
+                                    class="action-form"
+                                    action="{{ url_for(
+                                        'return_equipment',
+                                        asset_id=item.asset_id
+                                    ) }}"
+                                    method="POST"
+                                >
+                                    <button
+                                        class="return-button"
+                                        type="submit"
+                                    >
+                                        Return
+                                    </button>
+                                </form>
+
+
+                            {% elif item.status == "Maintenance" %}
+
+                                <form
+                                    class="action-form"
+                                    action="{{ url_for(
+                                        'restore_equipment',
+                                        asset_id=item.asset_id
+                                    ) }}"
+                                    method="POST"
+                                >
+                                    <button
+                                        class="restore-button"
+                                        type="submit"
+                                    >
+                                        Mark Available
+                                    </button>
+                                </form>
+
+                            {% else %}
+
+                                <span class="no-action">
+                                    No action
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td
+                            colspan="5"
+                            class="no-results"
+                        >
+                            No equipment found.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <p>LabAsset - Laboratory Equipment Tracking System</p>
+    </footer>
 
 </body>
 

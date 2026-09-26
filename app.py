@@ -42,27 +42,52 @@ VALID_CATEGORIES = [
 
 @app.route("/")
 def home():
+    search = request.args.get("search", "").strip()
+    status_filter = request.args.get("status", "").strip()
+
+    filtered_equipment = equipment
+
+    if search:
+        search_lower = search.lower()
+
+        filtered_equipment = [
+            item for item in filtered_equipment
+            if search_lower in item["asset_id"].lower()
+            or search_lower in item["name"].lower()
+        ]
+
+    if status_filter:
+        filtered_equipment = [
+            item for item in filtered_equipment
+            if item["status"] == status_filter
+        ]
+
     total = len(equipment)
 
     available = sum(
-        item["status"] == "Available" for item in equipment
+        item["status"] == "Available"
+        for item in equipment
     )
 
     issued = sum(
-        item["status"] == "Issued" for item in equipment
+        item["status"] == "Issued"
+        for item in equipment
     )
 
     maintenance = sum(
-        item["status"] == "Maintenance" for item in equipment
+        item["status"] == "Maintenance"
+        for item in equipment
     )
 
     return render_template(
         "index.html",
-        equipment=equipment,
+        equipment=filtered_equipment,
         total=total,
         available=available,
         issued=issued,
-        maintenance=maintenance
+        maintenance=maintenance,
+        search=search,
+        status_filter=status_filter
     )
 
 
@@ -101,17 +126,11 @@ def add_equipment():
     )
 
     if duplicate:
-        flash(
-            "Asset ID already exists.",
-            "error"
-        )
+        flash("Asset ID already exists.", "error")
         return redirect(url_for("home"))
 
     if category not in VALID_CATEGORIES:
-        flash(
-            "Invalid equipment category.",
-            "error"
-        )
+        flash("Invalid equipment category.", "error")
         return redirect(url_for("home"))
 
     new_equipment = {
@@ -134,7 +153,6 @@ def add_equipment():
 @app.route("/issue/<asset_id>", methods=["POST"])
 def issue_equipment(asset_id):
     for item in equipment:
-
         if item["asset_id"] == asset_id:
 
             if item["status"] != "Available":
@@ -160,7 +178,6 @@ def issue_equipment(asset_id):
 @app.route("/return/<asset_id>", methods=["POST"])
 def return_equipment(asset_id):
     for item in equipment:
-
         if item["asset_id"] == asset_id:
 
             if item["status"] != "Issued":
@@ -186,7 +203,6 @@ def return_equipment(asset_id):
 @app.route("/maintenance/<asset_id>", methods=["POST"])
 def send_to_maintenance(asset_id):
     for item in equipment:
-
         if item["asset_id"] == asset_id:
 
             if item["status"] != "Available":
@@ -212,7 +228,6 @@ def send_to_maintenance(asset_id):
 @app.route("/restore/<asset_id>", methods=["POST"])
 def restore_equipment(asset_id):
     for item in equipment:
-
         if item["asset_id"] == asset_id:
 
             if item["status"] != "Maintenance":
