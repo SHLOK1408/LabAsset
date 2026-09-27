@@ -1,3 +1,5 @@
+import os
+
 from flask import (
     Flask,
     render_template,
@@ -261,6 +263,12 @@ def health():
         "status": "ok"
     })
 
+@app.context_processor
+def inject_commit_id():
+    commit_id = os.environ.get("RENDER_GIT_COMMIT", "local")
+    return {
+        "commit_id": commit_id[:7]
+    }
 
 if __name__ == "__main__":
     app.run(
