@@ -41,17 +41,14 @@ def reset_equipment():
 
 def test_health_endpoint(client):
     response = client.get("/health")
-
     assert response.status_code == 200
-    assert response.get_json() == {"status": "broken"}
+    assert response.get_json() == {"status": "ok"}
+
 
 def test_equipment_api(client):
     response = client.get("/api/equipment")
-
     assert response.status_code == 200
-
     data = response.get_json()
-
     assert len(data) == 3
     assert data[0]["asset_id"] == "LAB001"
 
@@ -66,13 +63,8 @@ def test_add_valid_equipment(client):
         },
         follow_redirects=True
     )
-
     assert response.status_code == 200
-
-    assert any(
-        item["asset_id"] == "LAB004"
-        for item in equipment
-    )
+    assert any(item["asset_id"] == "LAB004" for item in equipment)
 
 
 def test_reject_invalid_asset_id(client):
@@ -85,13 +77,8 @@ def test_reject_invalid_asset_id(client):
         },
         follow_redirects=True
     )
-
     assert response.status_code == 200
-
-    assert not any(
-        item["asset_id"] == "INVALID"
-        for item in equipment
-    )
+    assert not any(item["asset_id"] == "INVALID" for item in equipment)
 
 
 def test_reject_duplicate_asset_id(client):
